@@ -5,10 +5,12 @@ import NotesAppNoteList from "./NotesAppNoteList";
 import { Note } from "./note";
 import { useEffect, useState } from "react";
 import { getLocalNotes, setLocalNotes } from "./localStorage";
+import NotesAppModalRead from "./NotesAppModalRead";
 
 export default function NotesApp() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [stagedNote, setStagedNote] = useState<Note | null>(null);
+  const [viewedNote, setViewedNote] = useState<Note | null>(null);
   const [initialLoad, setInitialLoad] = useState(true);
 
   const [notes, setNotes] = useState<Note[]>([]);
@@ -16,7 +18,7 @@ export default function NotesApp() {
   useEffect(() => {
     getLocalNotes().then(setNotes);
 
-    setInitialLoad(true);
+    setInitialLoad(false);
   }, []);
 
   useEffect(() => {
@@ -24,6 +26,13 @@ export default function NotesApp() {
 
     setLocalNotes(notes);
   }, [notes, initialLoad]);
+
+  async function viewNote(id: string) {
+    const noteToView = notes.find((note) => note.id === id);
+    if (!noteToView) return;
+
+    setViewedNote(noteToView);
+  }
 
   async function createLocalNote(note: Note) {
     setNotes((notes) => {
@@ -65,6 +74,7 @@ export default function NotesApp() {
         notes={notes}
         deleteNote={deleteLocalNote}
         updateNote={updateNote}
+        viewNote={viewNote}
       />
       <NotesAppModalCreate
         isOpen={createModalOpen}
@@ -78,6 +88,12 @@ export default function NotesApp() {
           {...stagedNote}
           updateNote={updateLocalNote}
           onClose={() => setStagedNote(null)}
+        />
+      )}
+      {viewedNote && (
+        <NotesAppModalRead
+          {...viewedNote}
+          onClose={() => setViewedNote(null)}
         />
       )}
     </>

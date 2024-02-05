@@ -16,7 +16,7 @@ import { Note } from "./note";
 import { marked } from "marked";
 import React, { useEffect, useState } from "react";
 import DOMPurify from "dompurify";
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { DeleteIcon, EditIcon, ViewIcon } from "@chakra-ui/icons";
 
 const purify = DOMPurify();
 
@@ -28,9 +28,11 @@ export default function NotesAppNotePreview({
   createdDate,
   deleteNote,
   updateNote,
+  viewNote,
 }: Note & {
   deleteNote: (id: string) => void;
   updateNote: (id: string) => void;
+  viewNote: (id: string) => void;
 }) {
   const [rawHTML, setRawHtml] = useState("");
   const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
@@ -53,6 +55,14 @@ export default function NotesAppNotePreview({
           <h3 className="text-2xl uppercase font-semibold">{title}</h3>
           <div className="flex gap-4">
             <IconButton
+              colorScheme="red"
+              aria-label="Delete Note"
+              onClick={() => {
+                setDeleteAlertOpen(true);
+              }}
+              icon={<DeleteIcon />}
+            />
+            <IconButton
               colorScheme="blue"
               aria-label="Update Note"
               onClick={() => {
@@ -61,18 +71,18 @@ export default function NotesAppNotePreview({
               icon={<EditIcon />}
             />
             <IconButton
-              colorScheme="red"
-              aria-label="Delete Note"
+              colorScheme="green"
+              aria-label="View Note"
               onClick={() => {
-                setDeleteAlertOpen(true);
+                viewNote(id);
               }}
-              icon={<DeleteIcon />}
+              icon={<ViewIcon />}
             />
           </div>
         </CardHeader>
         <CardBody
           dangerouslySetInnerHTML={{ __html: purify.sanitize(rawHTML) }}
-          className="line-clamp-3"
+          className={`line-clamp-3 ${markdown && "prose"}`}
         ></CardBody>
         <CardFooter className="text-sm italic">
           {createdDate.toDateString()}

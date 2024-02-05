@@ -5,10 +5,12 @@ export default function NotesAppNoteList({
   notes,
   deleteNote,
   updateNote,
+  viewNote,
 }: {
   notes: Note[];
   deleteNote: (id: string) => void;
   updateNote: (id: string) => void;
+  viewNote: (id: string) => void;
 }) {
   return (
     <>
@@ -19,6 +21,7 @@ export default function NotesAppNoteList({
             {...note}
             deleteNote={deleteNote}
             updateNote={updateNote}
+            viewNote={viewNote}
           />
         ))}
       </div>
