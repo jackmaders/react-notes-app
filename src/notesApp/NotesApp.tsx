@@ -1,53 +1,53 @@
 import { Button } from "@chakra-ui/react";
 import NotesAppModalCreate from "./NotesAppModalCreate";
-import NotesAppModalEdit from "./NotesAppModalEdit";
-import NotesAppModalRead from "./NotesAppModalRead";
+import NotesAppModalUpdate from "./NotesAppModalUpdate";
 import NotesAppNoteList from "./NotesAppNoteList";
 import { Note } from "./note";
-import { useState } from "react";
-
-const LOCAL_STORAGE_KEY_NAME = "notes";
+import { useEffect, useState } from "react";
+import { getLocalNotes, setLocalNotes } from "./localStorage";
 
 export default function NotesApp() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [stagedNote, setStagedNote] = useState<Note | null>(null);
+  const [initialLoad, setInitialLoad] = useState(true);
 
-  const [notes, setNotes] = useState<Note[]>(() => {
-    const localNotesString = localStorage.getItem(LOCAL_STORAGE_KEY_NAME);
+  const [notes, setNotes] = useState<Note[]>([]);
 
-    if (!localNotesString) return [];
+  useEffect(() => {
+    getLocalNotes().then(setNotes);
 
-    const { notes } = JSON.parse(localNotesString);
+    setInitialLoad(true);
+  }, []);
 
-    const parsedNotes = notes.map((note: Note) => ({
-      ...note,
-      createdDate: new Date(note.createdDate),
-    }));
+  useEffect(() => {
+    if (initialLoad) return;
 
-    return parsedNotes;
-  });
+    setLocalNotes(notes);
+  }, [notes, initialLoad]);
 
-  function createNote(newNote: Note) {
-    const localNoteString = localStorage.getItem(LOCAL_STORAGE_KEY_NAME);
+  async function createLocalNote(note: Note) {
+    setNotes((notes) => {
+      return [...notes, note];
+    });
+  }
 
-    const notes: Note[] = [newNote];
+  async function deleteLocalNote(id: string) {
+    setNotes((notes) => {
+      return notes.filter((note) => note.id !== id);
+    });
+  }
 
-    if (localNoteString) {
-      const localNoteObject = JSON.parse(localNoteString);
+  async function updateLocalNote(newNote: Note) {
+    setNotes((notes) => {
+      return notes.map((note) => (note.id === newNote.id ? newNote : note));
+    });
+  }
 
-      const localNotes: Note[] = localNoteObject.notes;
+  async function updateNote(id: string) {
+    const noteToUpdate = notes.find((note) => note.id === id);
+    if (!noteToUpdate) return;
 
-      notes.push(...localNotes);
-    }
-
-    const newNotesString = JSON.stringify({ notes });
-
-    localStorage.setItem(LOCAL_STORAGE_KEY_NAME, newNotesString);
-    const parsedNotes = notes.map((note) => ({
-      ...note,
-      createdDate: new Date(note.createdDate),
-    }));
-
-    setNotes(parsedNotes);
+    setStagedNote(noteToUpdate);
   }
 
   return (
@@ -61,16 +61,25 @@ export default function NotesApp() {
           New Note
         </Button>
       </div>
-      <NotesAppNoteList notes={notes} />
+      <NotesAppNoteList
+        notes={notes}
+        deleteNote={deleteLocalNote}
+        updateNote={updateNote}
+      />
       <NotesAppModalCreate
         isOpen={createModalOpen}
         onClose={() => {
           setCreateModalOpen(false);
         }}
-        createNote={createNote}
+        createNote={createLocalNote}
       />
-      <NotesAppModalRead />
-      <NotesAppModalEdit />
+      {stagedNote && (
+        <NotesAppModalUpdate
+          {...stagedNote}
+          updateNote={updateLocalNote}
+          onClose={() => setStagedNote(null)}
+        />
+      )}
     </>
   );
 }

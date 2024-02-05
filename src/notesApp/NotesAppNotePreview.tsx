@@ -1,18 +1,40 @@
-import { Card, CardBody, CardFooter, CardHeader } from "@chakra-ui/react";
+import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  IconButton,
+} from "@chakra-ui/react";
 import { Note } from "./note";
 import { marked } from "marked";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import DOMPurify from "dompurify";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 
 const purify = DOMPurify();
 
 export default function NotesAppNotePreview({
+  id,
   title,
   content,
   markdown,
   createdDate,
-}: Note) {
+  deleteNote,
+  updateNote,
+}: Note & {
+  deleteNote: (id: string) => void;
+  updateNote: (id: string) => void;
+}) {
   const [rawHTML, setRawHtml] = useState("");
+  const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
+  const cancelRef = React.useRef(null);
 
   useEffect(() => {
     const parseContent = async () => {
@@ -27,8 +49,26 @@ export default function NotesAppNotePreview({
   return (
     <>
       <Card>
-        <CardHeader className="text-2xl uppercase font-semibold">
-          {title}
+        <CardHeader className="flex justify-between">
+          <h3 className="text-2xl uppercase font-semibold">{title}</h3>
+          <div className="flex gap-4">
+            <IconButton
+              colorScheme="blue"
+              aria-label="Update Note"
+              onClick={() => {
+                updateNote(id);
+              }}
+              icon={<EditIcon />}
+            />
+            <IconButton
+              colorScheme="red"
+              aria-label="Delete Note"
+              onClick={() => {
+                setDeleteAlertOpen(true);
+              }}
+              icon={<DeleteIcon />}
+            />
+          </div>
         </CardHeader>
         <CardBody
           dangerouslySetInnerHTML={{ __html: purify.sanitize(rawHTML) }}
@@ -38,6 +78,46 @@ export default function NotesAppNotePreview({
           {createdDate.toDateString()}
         </CardFooter>
       </Card>
+      <AlertDialog
+        isOpen={deleteAlertOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={() => {
+          setDeleteAlertOpen(false);
+        }}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Delete Note
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              Are you sure? You can't undo this action afterwards.
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button
+                ref={cancelRef}
+                onClick={() => {
+                  setDeleteAlertOpen(false);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={() => {
+                  setDeleteAlertOpen(false);
+                  deleteNote(id);
+                }}
+                ml={3}
+              >
+                Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </>
   );
 }
