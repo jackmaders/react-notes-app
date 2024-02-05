@@ -15,15 +15,17 @@ export default function NotesAppNoteList({
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {notes.map((note, index) => (
-          <NotesAppNoteCard
-            key={index}
-            {...note}
-            deleteNote={deleteNote}
-            updateNote={updateNote}
-            viewNote={viewNote}
-          />
-        ))}
+        {notes.length > 0
+          ? notes.map((note, index) => (
+              <NotesAppNoteCard
+                key={index}
+                {...note}
+                deleteNote={deleteNote}
+                updateNote={updateNote}
+                viewNote={viewNote}
+              />
+            ))
+          : "No notes..."}
       </div>
     </>
   );
