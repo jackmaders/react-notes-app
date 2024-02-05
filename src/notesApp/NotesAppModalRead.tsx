@@ -39,10 +39,15 @@ export default function NotesAppModalUpdate({
         <ModalOverlay />
         <ModalContent className="prose">
           <ModalHeader>
-            <h1>{title}</h1>
+            <h1 className="mb-0">{title}</h1>
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody dangerouslySetInnerHTML={{ __html: rawHTML }}></ModalBody>
+          <ModalBody>
+            <div
+              dangerouslySetInnerHTML={{ __html: rawHTML }}
+              className="[&>p:first-child]:mt-0 [&>p:last-child]:mb-0"
+            ></div>
+          </ModalBody>
           <ModalFooter>{createdDate.toDateString()}</ModalFooter>
         </ModalContent>
       </Modal>

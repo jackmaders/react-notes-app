@@ -20,7 +20,7 @@ import { DeleteIcon, EditIcon, ViewIcon } from "@chakra-ui/icons";
 
 const purify = DOMPurify();
 
-export default function NotesAppNotePreview({
+export default function NotesAppNoteCard({
   id,
   title,
   content,

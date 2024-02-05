@@ -1,4 +1,4 @@
-import NotesAppNotePreview from "./NotesAppNotePreview";
+import NotesAppNoteCard from "./NotesAppNoteCard";
 import { Note } from "./note";
 
 export default function NotesAppNoteList({
@@ -16,7 +16,7 @@ export default function NotesAppNoteList({
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {notes.map((note, index) => (
-          <NotesAppNotePreview
+          <NotesAppNoteCard
             key={index}
             {...note}
             deleteNote={deleteNote}
