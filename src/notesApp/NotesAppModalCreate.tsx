@@ -19,7 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useEffect, useState } from "react";
 import { Note } from "./note";
 
-type NotesAppModalCreate = {
+type NotesAppModalCreateProps = {
   isOpen: boolean;
   onClose: () => void;
   createNote: (note: Note) => void;
@@ -29,7 +29,7 @@ export default function NotesAppModalCreate({
   isOpen,
   onClose,
   createNote,
-}: NotesAppModalCreate) {
+}: NotesAppModalCreateProps) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [markdown, setMarkdown] = useState(false);
