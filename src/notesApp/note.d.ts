@@ -1,6 +1,7 @@
 export type Note = {
-  title?: string;
+  id: v4;
+  title: string;
   content: string;
-  markdown?: boolean;
+  markdown: boolean;
   createdDate: Date;
 };
