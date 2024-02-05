@@ -80,10 +80,12 @@ export default function NotesAppNotePreview({
             />
           </div>
         </CardHeader>
-        <CardBody
-          dangerouslySetInnerHTML={{ __html: purify.sanitize(rawHTML) }}
-          className={`line-clamp-3 ${markdown && "prose"}`}
-        ></CardBody>
+        <CardBody className={markdown ? "prose" : ""}>
+          <div
+            dangerouslySetInnerHTML={{ __html: purify.sanitize(rawHTML) }}
+            className={`line-clamp-3 [&>p:first-child]:mt-0 [&>p:last-child]:mb-0`}
+          ></div>
+        </CardBody>
         <CardFooter className="text-sm italic">
           {createdDate.toDateString()}
         </CardFooter>
