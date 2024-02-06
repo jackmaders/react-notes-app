@@ -11,21 +11,12 @@ export default function NotesApp() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [stagedNote, setStagedNote] = useState<Note | null>(null);
   const [viewedNote, setViewedNote] = useState<Note | null>(null);
-  const [initialLoad, setInitialLoad] = useState(true);
 
-  const [notes, setNotes] = useState<Note[]>([]);
-
-  useEffect(() => {
-    getLocalNotes().then(setNotes);
-
-    setInitialLoad(false);
-  }, []);
+  const [notes, setNotes] = useState<Note[]>(getLocalNotes());
 
   useEffect(() => {
-    if (initialLoad) return;
-
     setLocalNotes(notes);
-  }, [notes, initialLoad]);
+  }, [notes]);
 
   async function viewNote(id: string) {
     const noteToView = notes.find((note) => note.id === id);
